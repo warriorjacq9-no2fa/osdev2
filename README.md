@@ -1,1 +1,2 @@
 # osdev2
+This is my second OSDev project, this time without using any templates. This code will use the GRUB bootloader and the Multiboot boot protocol. This code is hosted under the GNU GPLv2 license.
