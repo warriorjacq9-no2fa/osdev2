@@ -6,7 +6,8 @@ arch/$(ARCH)/boot.o \
 
 
 build: $(SRCS)
-	$(LD) $(LDFLAGS) -T arch/$(ARCH)/linker.ld $^ -o os.bin
+	$(LD) $(LDFLAGS) -T arch/$(ARCH)/linker.ld $^ -o kernel.bin
+	grub-file --is-x86-multiboot2 kernel.bin
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $^ -o $@
