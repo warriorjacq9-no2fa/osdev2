@@ -24,16 +24,16 @@ export LDFLAGS
 export ARCH
 
 .PHONY: all build clean test
-all: os.iso
+all: os.iso kernel/kernel.bin
 
-os.iso: kernel/kernel.bin
+os.iso:
 	mkdir -p isodir/boot/grub
 	cp  boot/grub.cfg isodir/boot/grub/grub.cfg
 	cp kernel/kernel.bin isodir/boot/
 	grub-mkrescue -o $@ isodir
 
 kernel/kernel.bin:
-	$(MAKE) -C kernel build
+	$(MAKE) -C kernel kernel.bin
 
 clean:
 	rm -rf *.iso isodir
