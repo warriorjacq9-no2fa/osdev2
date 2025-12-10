@@ -1,5 +1,10 @@
-#include <stddefs.h>
+#include <stddef.h>
+#include <arch.h>
 
 int kmain(size_t* mbi) {
-    return (int)mbi;
+    arch_init();
+
+    puts("Hello\nWorld\n");
+
+    for(;;) asm("hlt");
 }

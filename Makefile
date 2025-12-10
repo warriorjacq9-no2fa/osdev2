@@ -24,15 +24,15 @@ export LDFLAGS
 export ARCH
 
 .PHONY: all build clean test
-all: os.iso kernel/kernel.bin
+all: build os.iso
 
-os.iso:
+os.iso: kernel/kernel.bin
 	mkdir -p isodir/boot/grub
 	cp  boot/grub.cfg isodir/boot/grub/grub.cfg
 	cp kernel/kernel.bin isodir/boot/
 	grub-mkrescue -o $@ isodir
 
-kernel/kernel.bin:
+build:
 	$(MAKE) -C kernel kernel.bin
 
 clean:
@@ -40,5 +40,5 @@ clean:
 	$(MAKE) -C kernel clean
 	$(MAKE) -C libk clean
 
-test: os.iso
+test: build os.iso
 	qemu-system-i386 -cdrom os.iso
