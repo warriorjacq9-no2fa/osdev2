@@ -1,6 +1,6 @@
 #include <stdint.h>
 #include <stdio.h>
-#include <vga.h>
+#include "vga.h"
 
 static uint16_t* VGA_MEM = (uint16_t*)0xB8000;
 
