@@ -1,5 +1,3 @@
-INCLUDES := -I$(CURDIR)/kernel/arch/i386/include
-
 CFLAGS += -m32 -static -Os -ffreestanding -Wall -Wextra $(INCLUDES)
 CC = gcc
 
@@ -9,7 +7,8 @@ AS = nasm
 LD = gcc
 LDFLAGS = -O2 -nostdlib -ffreestanding -m32 -static
 
-ARCH = i386
+ARCH ?= i386
+TARGET ?= dlx
 
 # Export variables for subdirectories
 export CFLAGS
@@ -22,6 +21,7 @@ export LD
 export LDFLAGS
 
 export ARCH
+export TARGET
 
 .PHONY: all build clean test
 all: build os.iso

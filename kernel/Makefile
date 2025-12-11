@@ -1,5 +1,8 @@
 .PHONY: build clean
 
+INCLUDES := -I$(CURDIR)/arch/$(ARCH)/include \
+-I$(CURDIR)/target/$(TARGET)/include
+
 SRCS = \
 kernel.o \
 arch/$(ARCH)/boot.o \
@@ -14,7 +17,7 @@ kernel.bin: $(SRCS)
 	grub-file --is-x86-multiboot2 kernel.bin
 
 %.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 %.o: %.asm
 	$(AS) $(AFLAGS) $< -o $@

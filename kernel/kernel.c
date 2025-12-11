@@ -6,5 +6,5 @@ int kmain(size_t* mbi) {
 
     puts("Hello\nWorld\n");
 
-    for(;;) asm("hlt");
+    for(;;) wait();
 }
