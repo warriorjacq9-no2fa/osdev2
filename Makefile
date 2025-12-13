@@ -1,6 +1,8 @@
 CFLAGS += -m32 -static -Os -ffreestanding -Wall -Wextra $(INCLUDES)
 CC = gcc
 
+AR = ar
+
 AFLAGS += -felf32
 AS = nasm
 
@@ -14,6 +16,8 @@ TARGET ?= dlx
 export CFLAGS
 export CC
 
+export AR
+
 export AFLAGS
 export AS
 
@@ -26,13 +30,14 @@ export TARGET
 .PHONY: all build clean test
 all: build os.iso
 
-os.iso: kernel/kernel.bin
+os.iso: libk/libk.a kernel/kernel.bin
 	mkdir -p isodir/boot/grub
 	cp  boot/grub.cfg isodir/boot/grub/grub.cfg
 	cp kernel/kernel.bin isodir/boot/
 	grub-mkrescue -o $@ isodir
 
 build:
+	$(MAKE) -C libk libk.a
 	$(MAKE) -C kernel kernel.bin
 
 clean:
@@ -41,4 +46,4 @@ clean:
 	$(MAKE) -C libk clean
 
 test: build os.iso
-	qemu-system-i386 -cdrom os.iso
+	qemu-system-i386 -cdrom os.iso -d int -D qemu.log -no-reboot -no-shutdown

@@ -1,5 +1,5 @@
 #include <stddef.h>
-#include <arch.h>
+#include <kernel/arch.h>
 
 int kmain(size_t* mbi) {
     arch_init();

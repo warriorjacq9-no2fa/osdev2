@@ -1,19 +1,21 @@
 .PHONY: build clean
 
 INCLUDES := -I$(CURDIR)/arch/$(ARCH)/include \
--I$(CURDIR)/target/$(TARGET)/include
+-I$(CURDIR)/../libk/arch/$(ARCH)/include \
+-I$(CURDIR)/../libk/include 
+
+LIBS := -L$(CURDIR)/../libk -lk
 
 SRCS = \
 kernel.o \
 arch/$(ARCH)/boot.o \
 arch/$(ARCH)/arch.o \
-arch/$(ARCH)/ports.o \
 arch/$(ARCH)/vga.o
 
 
 kernel.bin: $(SRCS)
-	$(LD) $(LDFLAGS) -T arch/$(ARCH)/linker.ld $^ -o kernel.bin
-	objdump -d kernel.bin > kernel.dump
+	$(LD) $(LDFLAGS) -T arch/$(ARCH)/linker.ld $^ $(LIBS) -o kernel.bin
+	objdump -s -d kernel.bin > kernel.dump
 	grub-file --is-x86-multiboot2 kernel.bin
 
 %.o: %.c
@@ -23,4 +25,4 @@ kernel.bin: $(SRCS)
 	$(AS) $(AFLAGS) $< -o $@
 
 clean:
-	rm -f *.o arch/*/*.o *.bin
+	rm -f $(SRCS) *.bin
