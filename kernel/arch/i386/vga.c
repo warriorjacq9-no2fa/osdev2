@@ -20,11 +20,23 @@ void cursor(uint8_t x, uint8_t y) {
     outb(0x3D5, (uint8_t)((pos >> 8) & 0xFF));
 }
 
-void putc(char c, uint8_t x, uint8_t y) {
-    cursor(x + 1, y);
+void putc(char c) {
     if(c == 0) return;
-    uint16_t off = y * WIDTH + x;
+    if(tx >= WIDTH) {
+        tx = 0;
+        ty += 1;
+    }
+    if(c == '\n' || c == '\r') {
+        tx = 0;
+        ty += 1;
+        c = 0;
+        cursor(tx, ty);
+        return;
+    }
+    cursor(tx + 1, ty);
+    uint16_t off = ty * WIDTH + tx;
     VGA_MEM[off] = vga_entry(0x07, c);
+    tx++;
 }
 
 void puts(char* s) {
@@ -32,16 +44,6 @@ void puts(char* s) {
     int i;
     char c;
     while((c = *s++) != 0){
-        if(tx >= WIDTH) {
-            tx = 0;
-            ty += 1;
-        }
-        if(c == '\n' || c == '\t') {
-            tx = 0;
-            ty += 1;
-            c = 0;
-            cursor(tx, ty);
-        } else
-            putc(c, tx++, ty);
+        putc(c);
     }
 }

@@ -1,4 +1,4 @@
-CFLAGS += -m32 -static -Os -ffreestanding -Wall -Wextra $(INCLUDES)
+CFLAGS += -m32 -march=i386 -static -Os -fno-stack-protector -ffreestanding -Wall -Wextra $(INCLUDES)
 CC = gcc
 
 AR = ar
@@ -7,7 +7,7 @@ AFLAGS += -felf32
 AS = nasm
 
 LD = gcc
-LDFLAGS = -O2 -nostdlib -ffreestanding -m32 -static
+LDFLAGS = -Os -nostdlib -fno-stack-protector -ffreestanding -m32 -static
 
 ARCH ?= i386
 TARGET ?= dlx

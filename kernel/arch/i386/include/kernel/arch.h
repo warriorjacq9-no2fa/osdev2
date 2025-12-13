@@ -11,6 +11,6 @@ void wait();
 
 void arch_init();
 void puts(char* s);
-void putc(char c, uint8_t x, uint8_t y);
+void putc(char c);
 
 #endif

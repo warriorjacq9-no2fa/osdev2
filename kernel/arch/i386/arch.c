@@ -15,6 +15,10 @@ typedef struct {
     uint16_t    offset_h;
 } __attribute__((packed)) idtent_t;
 
+typedef struct {
+   uint32_t eip, cs, eflags, esp;
+} registers_t;
+
 extern tabreg_t gdt_r;
 extern uint32_t isr_stub_table[32];
 
@@ -35,8 +39,10 @@ void add_idt_entry(int v, uint32_t isr, uint8_t flags) {
 }
 
 void arch_init() {
+    vga_init();
     // Load GDT
     asm volatile("lgdt %0" : : "m" (gdt_r) : "memory");
+    printf("[i386] GDT is at 0x%08X, %u bytes long\n", gdt_r.base, gdt_r.limit);
 
     // Fill out IDT and load it
     for(int i = 0; i < 32; i++) {
@@ -46,19 +52,19 @@ void arch_init() {
     idt_r.base = (uint32_t) &idt[0];
     idt_r.limit = sizeof(idtent_t) * 32 - 1;
     asm volatile("lidt %0" : : "m" (idt_r) : "memory");
+    printf("[i386] IDT is at 0x%08X, %u bytes long\n", idt_r.base, idt_r.limit);
 
     // Before enabling interrupts, we need to disable the PIC
     outb(0x21, 0xFF);
     outb(0xA1, 0xFF);
 
     asm volatile("sti");
-    vga_init();
 }
 
-void exception_handler(uint32_t vec) {
-    puts("Exception!\n");
+void exception_handler(uint32_t vec, registers_t r) {
+    printf("Exception 0x%02X at %08X!\n", vec, r.eip);
 }
 
-void exception_handler_err(uint32_t code, uint32_t vec) {
-    puts("Exception!\n");
+void exception_handler_err(uint32_t vec, registers_t r, uint32_t code) {
+    printf("Exception 0x%02X at %08X, error code %X\n", vec, r.eip, code);
 }
