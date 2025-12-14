@@ -16,11 +16,13 @@ typedef struct {
 } __attribute__((packed)) idtent_t;
 
 typedef struct {
-   uint32_t eip, cs, eflags, esp;
+   uint32_t eip, cs, eflags;
 } registers_t;
 
 extern tabreg_t gdt_r;
 extern uint32_t isr_stub_table[32];
+extern uint32_t timer_stub;
+extern void gdt_load();
 
 static idtent_t idt[256];
 tabreg_t idt_r;
@@ -38,25 +40,53 @@ void add_idt_entry(int v, uint32_t isr, uint8_t flags) {
     idt[v].segment = 0x0008;
 }
 
+void pic_remap(uint8_t off1, uint8_t off2) {
+    outb(0x20, 0x11); // ICW1: indicate presence of ICW4
+    iowait();
+    outb(0xA0, 0x11);
+    iowait();
+    outb(0x21, off1); // ICW2: set interrupt vector offsets
+    iowait();
+    outb(0xA1, off2);
+    iowait();
+    outb(0x21, 0x2); // ICW3: set cascade identity
+    iowait();
+    outb(0xA1, 0x2);
+    iowait();
+
+    outb(0x21, 0x01); // ICW4: set optional features (8086 mode)
+	iowait();
+	outb(0x21, 0x01);
+	iowait();
+}
+
+void timer() {
+    puts("Timer\n");
+    outb(0x20, 0x20);
+}
+
 void arch_init() {
     vga_init();
     // Load GDT
-    asm volatile("lgdt %0" : : "m" (gdt_r) : "memory");
+    gdt_load();
     printf("[i386] GDT is at 0x%08X, %u bytes long\n", gdt_r.base, gdt_r.limit);
 
     // Fill out IDT and load it
     for(int i = 0; i < 32; i++) {
-        // Flags: Present (7), Ring 0 (5-6), Trap gate (0-3)
+        // Flags: Present (7), Ring 0 (5-6), Exception gate (0-3)
         add_idt_entry(i, isr_stub_table[i], 0x8E);
     }
     idt_r.base = (uint32_t) &idt[0];
-    idt_r.limit = sizeof(idtent_t) * 32 - 1;
+    idt_r.limit = sizeof(idtent_t) * 256 - 1;
     asm volatile("lidt %0" : : "m" (idt_r) : "memory");
     printf("[i386] IDT is at 0x%08X, %u bytes long\n", idt_r.base, idt_r.limit);
 
-    // Before enabling interrupts, we need to disable the PIC
-    outb(0x21, 0xFF);
+    // Before enabling interrupts, we need to remap and mask the PIC
+    pic_remap(0x20, 0x28);
+    
+    outb(0x21, 0xFE); // Enable IRQ 0 (Timer)
     outb(0xA1, 0xFF);
+    add_idt_entry(0x20, (uint32_t)&timer_stub, 0x8E);
 
     asm volatile("sti");
 }
@@ -65,6 +95,6 @@ void exception_handler(uint32_t vec, registers_t r) {
     printf("Exception 0x%02X at %08X!\n", vec, r.eip);
 }
 
-void exception_handler_err(uint32_t vec, registers_t r, uint32_t code) {
-    printf("Exception 0x%02X at %08X, error code %X\n", vec, r.eip, code);
+void exception_handler_err(uint32_t vec, uint32_t code, registers_t r) {
+    printf("Exception 0x%02X at %08X, error code 0x%X\n", vec, r.eip, code);
 }

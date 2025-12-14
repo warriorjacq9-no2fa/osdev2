@@ -93,7 +93,32 @@ isr_err     29
 isr_err     30
 isr_res     31
 
+global timer_stub
+extern timer
+timer_stub:
+    pusha
+    call timer
+    popa
+    iret
+
+
 global gdt_r
+global gdt_load
+gdt_load:
+    lgdt [gdt_r]
+
+    ; Reload CS
+    jmp 0x08:.flush
+.flush:
+
+    ; Reload data segments
+    mov ax, 0x10
+    mov ds, ax
+    mov es, ax
+    mov ss, ax
+    mov fs, ax        ; optional
+    mov gs, ax        ; optional
+    ret
 
 section .rodata
 

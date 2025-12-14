@@ -10,3 +10,7 @@ uint8_t inb(uint16_t port) {
     asm volatile("inb %w1, %b0" : "=a" (data) : "Nd" (port) : "memory");
     return data;
 }
+
+inline void iowait() {
+    outb(0x80, 0);
+}
