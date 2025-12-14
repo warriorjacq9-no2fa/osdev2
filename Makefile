@@ -41,7 +41,7 @@ build:
 	$(MAKE) -C kernel kernel.bin
 
 clean:
-	rm -rf *.iso isodir
+	rm -rf *.log *.iso isodir
 	$(MAKE) -C kernel clean
 	$(MAKE) -C libk clean
 

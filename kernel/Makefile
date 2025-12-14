@@ -29,4 +29,4 @@ kernel.bin: $(SRCS)
 	$(AS) $(AFLAGS) $< -o $@
 
 clean:
-	rm -f $(SRCS) *.bin
+	rm -f $(SRCS) *.bin *.dump
