@@ -9,7 +9,7 @@
 
 #define ISUPPER(c) (64 < c && c < 91)
 #define ISLOWER(c) (96 < c && c < 123)
-#define ISALPHA(c) ((64 < c && c < 91) || 96 < c && c < 123)
+#define ISALPHA(c) ((64 < c && c < 91) || (96 < c && c < 123))
 #define ISDIGIT(c) (47 < c && c < 58)
 #define ISSPACE(c) ((8 < c && c < 14) || c == 32)
 

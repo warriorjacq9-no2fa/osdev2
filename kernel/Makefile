@@ -6,6 +6,10 @@ INCLUDES := -I$(CURDIR)/arch/$(ARCH)/include \
 
 LIBS := -L$(CURDIR)/../libk -lk
 
+HEADERS = \
+arch/$(ARCH)/vga.h \
+arch/$(ARCH)/include/kernel/arch.h
+
 SRCS = \
 kernel.o \
 arch/$(ARCH)/boot.o \

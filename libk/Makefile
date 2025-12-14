@@ -5,6 +5,11 @@ INCLUDES = \
 -I$(CURDIR)/include \
 -I$(CURDIR)/../kernel/arch/$(ARCH)/include
 
+HEADERS = \
+arch/$(ARCH)/include/stddef.h \
+include/stdio.h \
+include/string.h
+
 SRCS = \
 arch/$(ARCH)/ports.o \
 stdio/printf.o \
@@ -26,7 +31,7 @@ string/strtoul.o \
 libk.a: $(SRCS)
 	$(AR) rcs $@ $^
 
-%.o: %.c
+%.o: %.c $(HEADERS)
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 clean:

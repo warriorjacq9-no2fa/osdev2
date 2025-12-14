@@ -41,7 +41,6 @@ void putc(char c) {
 
 void puts(char* s) {
     if(s == 0) return;
-    int i;
     char c;
     while((c = *s++) != 0){
         putc(c);
