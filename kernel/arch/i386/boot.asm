@@ -1,21 +1,3 @@
-; We are using Multiboot 2 for this kernel
-section .multiboot
-MAGIC   equ 0xE85250D6
-ARCH    equ 0           ; i386 32-bit protected mode
-HLEN    equ header_end - $$
-CHECK   equ -(MAGIC + ARCH + HLEN)
-
-dd MAGIC
-dd ARCH
-dd HLEN
-dd CHECK
-; Multiboot 2 tags
-; End tag
-dw 0
-dw 0
-dd 8
-header_end:
-
 section .bss
 stack_bottom:
 resb 4096 ; 4KB of stack
@@ -27,6 +9,27 @@ extern kmain
 
 global _start
 _start:
+    cli
+    lgdt [gdt_r]
+
+    mov eax, cr0
+    or eax, 1
+    mov cr0, eax
+
+    ; Reload CS
+    jmp 0x08:.flush
+.flush:
+
+    ; Reload data segments
+    mov ax, 0x10
+    mov ds, ax
+    mov es, ax
+    mov ss, ax
+    mov fs, ax        ; optional
+    mov gs, ax        ; optional
+    ret
+    
+prot_start:
 ; Get into C as fast as possible
     mov esp, stack_top
     call kmain
@@ -102,22 +105,6 @@ keyboard_stub:
 
 
 global gdt_r
-global gdt_load
-gdt_load:
-    lgdt [gdt_r]
-
-    ; Reload CS
-    jmp 0x08:.flush
-.flush:
-
-    ; Reload data segments
-    mov ax, 0x10
-    mov ds, ax
-    mov es, ax
-    mov ss, ax
-    mov fs, ax        ; optional
-    mov gs, ax        ; optional
-    ret
 
 section .rodata
 

@@ -1,6 +1,7 @@
 *.o
 *.bin
 *.iso
+*.img
 isodir/*
 *.dump
 *.log

@@ -24,7 +24,6 @@ typedef struct {
 extern tabreg_t gdt_r;
 extern uint32_t isr_stub_table[32];
 extern uint32_t keyboard_stub;
-extern void gdt_load();
 
 static idtent_t idt[256];
 tabreg_t idt_r;
@@ -65,8 +64,6 @@ void pic_remap(uint8_t off1, uint8_t off2) {
 void arch_init(void (*kcall)(char, unsigned char)) {
     keyboard_init(kcall);
     vga_init();
-    // Load GDT
-    gdt_load();
     printf("[i386] GDT is at 0x%08X, %u bytes long\n", gdt_r.base, gdt_r.limit);
 
     // Fill out IDT and load it
