@@ -8,13 +8,15 @@ LIBS := -L$(CURDIR)/../libk -lk
 
 HEADERS = \
 arch/$(ARCH)/vga.h \
+arch/$(ARCH)/kbd.h \
 arch/$(ARCH)/include/kernel/arch.h
 
 SRCS = \
 kernel.o \
 arch/$(ARCH)/boot.o \
 arch/$(ARCH)/arch.o \
-arch/$(ARCH)/vga.o
+arch/$(ARCH)/vga.o \
+arch/$(ARCH)/kbd.o
 
 
 kernel.bin: $(SRCS)
@@ -22,7 +24,7 @@ kernel.bin: $(SRCS)
 	objdump -s -d kernel.bin > kernel.dump
 	grub-file --is-x86-multiboot2 kernel.bin
 
-%.o: %.c
+%.o: %.c $(HEADERS)
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 %.o: %.asm
