@@ -46,3 +46,13 @@ void puts(char* s) {
         putc(c);
     }
 }
+
+void setpos(uint8_t x, uint8_t y) {
+    if(x > WIDTH || y > HEIGHT) return;
+    tx = x;
+    ty = y;
+}
+
+uint16_t getpos() {
+    return (ty << 8) | tx;
+}

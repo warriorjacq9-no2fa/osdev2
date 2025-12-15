@@ -13,6 +13,7 @@ arch/$(ARCH)/include/kernel/arch.h
 
 SRCS = \
 kernel.o \
+shell.o \
 arch/$(ARCH)/boot.o \
 arch/$(ARCH)/arch.o \
 arch/$(ARCH)/vga.o \
