@@ -9,7 +9,7 @@
 
 void wait();
 
-void arch_init();
+void arch_init(void (*kcall)(char, unsigned char));
 void puts(char* s);
 void putc(char c);
 
