@@ -1,6 +1,12 @@
 #include <kernel/arch.h>
 #include <stdio.h>
+#include <string.h>
 #include "vga.h"
+
+#define KBD_SHIFT   0x01
+#define KBD_CAPS    0x02
+
+unsigned char kstate = 0;
 
 typedef struct {
     uint16_t limit;
@@ -21,7 +27,7 @@ typedef struct {
 
 extern tabreg_t gdt_r;
 extern uint32_t isr_stub_table[32];
-extern uint32_t timer_stub;
+extern uint32_t keyboard_stub;
 extern void gdt_load();
 
 static idtent_t idt[256];
@@ -60,9 +66,64 @@ void pic_remap(uint8_t off1, uint8_t off2) {
 	iowait();
 }
 
-void timer() {
-    puts("Timer\n");
-    outb(0x20, 0x20);
+const char keymap[] = {
+    '\0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '\0',
+    '\0', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\n',
+    '\0', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\'', '`',
+    '\0', '\\', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', '\0',
+    '*', '\0', ' '
+};
+const char keymap_shift[] = {
+    '\0', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', '\0',
+    '\0', 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '{', '}', '\n',
+    '\0', 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ':', '"', '~',
+    '\0', '|', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', '<', '>', '?', '\0',
+    '*', '\0', ' '
+};
+void keyboard() {
+    unsigned char sc = inb(0x60);
+
+    switch (sc) {
+        /* Shift pressed */
+        case 0x2A: // Left Shift
+        case 0x36: // Right Shift
+            kstate |= KBD_SHIFT;
+            break;
+
+        /* Shift released */
+        case 0xAA:
+        case 0xB6:
+            kstate &= ~KBD_SHIFT;
+            break;
+
+        /* Caps Lock pressed */
+        case 0x3A:
+            kstate ^= KBD_CAPS; // toggle
+            break;
+
+        default:
+            if (!(sc & 0x80)) {
+                char ch;
+
+                if (kstate & KBD_SHIFT)
+                    ch = keymap_shift[sc - 1];
+                else
+                    ch = keymap[sc - 1];
+
+                if (ISALPHA(ch) && (kstate & KBD_CAPS)) {
+                    if (ISLOWER(ch))
+                        ch -= 32;
+                    else
+                        ch += 32;
+                }
+
+                if (ch)
+                    putc(ch);
+            }
+            break;
+    }
+
+    outb(0x20, 0x20); // PIC EOI
 }
 
 void arch_init() {
@@ -84,9 +145,9 @@ void arch_init() {
     // Before enabling interrupts, we need to remap and mask the PIC
     pic_remap(0x20, 0x28);
     
-    outb(0x21, 0xFE); // Enable IRQ 0 (Timer)
+    outb(0x21, 0xFD); // Enable IRQ 1 (Keyboard)
     outb(0xA1, 0xFF);
-    add_idt_entry(0x20, (uint32_t)&timer_stub, 0x8E);
+    add_idt_entry(0x21, (uint32_t)&keyboard_stub, 0x8E);
 
     asm volatile("sti");
 }

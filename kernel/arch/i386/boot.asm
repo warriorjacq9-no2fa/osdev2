@@ -93,11 +93,11 @@ isr_err     29
 isr_err     30
 isr_res     31
 
-global timer_stub
-extern timer
-timer_stub:
+global keyboard_stub
+extern keyboard
+keyboard_stub:
     pusha
-    call timer
+    call keyboard
     popa
     iret
 
