@@ -29,7 +29,6 @@ global _start
 _start:
 ; Get into C as fast as possible
     mov esp, stack_top
-    push eax
     call kmain
 
 halt:
