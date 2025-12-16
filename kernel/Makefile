@@ -1,4 +1,4 @@
-.PHONY: build clean
+.PHONY: clean
 
 INCLUDES := -I$(CURDIR)/arch/$(ARCH)/include \
 -I$(CURDIR)/../libk/arch/$(ARCH)/include \
@@ -19,10 +19,12 @@ arch/$(ARCH)/arch.o \
 arch/$(ARCH)/vga.o \
 arch/$(ARCH)/kbd.o
 
+kernel.img: arch/$(ARCH)/bootstrap.o kernel.bin
+	cat $^ > kernel.img
 
 kernel.bin: $(SRCS)
 	$(LD) $(LDFLAGS) -T arch/$(ARCH)/linker.ld $^ $(LIBS) -o kernel.bin
-	objdump -s -d kernel.bin > kernel.dump
+	objdump -b binary -m i386 --adjust-vma=0x10000 -D $@ > kernel.dump
 
 %.o: %.c $(HEADERS)
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
@@ -30,5 +32,9 @@ kernel.bin: $(SRCS)
 %.o: %.asm
 	$(AS) $(AFLAGS) $< -o $@
 
+arch/$(ARCH)/bootstrap.o: arch/$(ARCH)/bootstrap.asm
+	$(AS) -fbin $< -o $@
+	objdump -b binary -m i8086 --adjust-vma=0x7c00 -D $@ > bootstrap.dump
+
 clean:
-	rm -f $(SRCS) *.bin *.dump
+	rm -f $(SRCS) arch/$(ARCH)/bootstrap.o *.bin *.dump

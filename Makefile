@@ -1,9 +1,10 @@
-CFLAGS += -m32 -march=i386 -static -Os -fno-stack-protector -ffreestanding -Wall -Wextra $(INCLUDES)
+CFLAGS += -m32 -march=i386 -static -Os -fno-stack-protector -fno-pie -ffreestanding -Wall -Wextra
 CC = gcc
 
 AR = ar
 
 AFLAGS += -felf32
+AFLAGS_BIN += -fbin
 AS = nasm
 
 LD = gcc
@@ -19,6 +20,7 @@ export CC
 export AR
 
 export AFLAGS
+export AFLAGS_BIN
 export AS
 
 export LD
@@ -28,22 +30,19 @@ export ARCH
 export TARGET
 
 .PHONY: all build clean test
-all: build os.iso
+all: build os.img
 
-os.iso: libk/libk.a kernel/kernel.bin
-	mkdir -p isodir/boot/grub
-	cp  boot/grub.cfg isodir/boot/grub/grub.cfg
-	cp kernel/kernel.bin isodir/boot/
-	grub-mkrescue -o $@ isodir
+os.img: libk/libk.a kernel/kernel.img
+	cp $(lastword $^) $@
 
 build:
 	$(MAKE) -C libk libk.a
-	$(MAKE) -C kernel kernel.bin
+	$(MAKE) -C kernel kernel.img
 
 clean:
-	rm -rf *.log *.iso isodir
+	rm -rf *.log *.img isodir
 	$(MAKE) -C kernel clean
 	$(MAKE) -C libk clean
 
-test: build os.iso
-	qemu-system-i386 -cdrom os.iso -d int -D qemu.log -no-reboot -no-shutdown
+test: build os.img
+	qemu-system-i386 -fda os.img -d int -D qemu.log -no-reboot -no-shutdown

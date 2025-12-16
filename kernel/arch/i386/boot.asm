@@ -3,33 +3,8 @@ stack_bottom:
 resb 4096 ; 4KB of stack
 stack_top:
 
-section .text
-
-extern kmain
-
-global _start
-_start:
-    cli
-    lgdt [gdt_r]
-
-    mov eax, cr0
-    or eax, 1
-    mov cr0, eax
-
-    ; Reload CS
-    jmp 0x08:.flush
-.flush:
-
-    ; Reload data segments
-    mov ax, 0x10
-    mov ds, ax
-    mov es, ax
-    mov ss, ax
-    mov fs, ax        ; optional
-    mov gs, ax        ; optional
-    ret
-    
-prot_start:
+section .text.start
+boot_start:
 ; Get into C as fast as possible
     mov esp, stack_top
     call kmain
@@ -37,6 +12,9 @@ prot_start:
 halt:
     hlt
     jmp halt
+
+section .start
+extern kmain
 
 %macro isr_err 1
 isr_stub_%+%1:
@@ -103,26 +81,7 @@ keyboard_stub:
     popa
     iret
 
-
-global gdt_r
-
 section .rodata
-
-gdt:
-; Null descriptor
-dq 0x0000000000000000
-; Kernel code descriptor
-dq 0x00CF9B000000FFFF
-; Kernel data descriptor
-dq 0x00CF92000000FFFF
-; TSS descriptor
-dq 0x0000890000000000
-
-gdt_r:
-; Limit (32 bytes)
-dw 0x1F
-; Base
-dd gdt
 
 global isr_stub_table
 isr_stub_table:

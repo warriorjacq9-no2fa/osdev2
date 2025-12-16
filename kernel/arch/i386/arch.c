@@ -21,7 +21,6 @@ typedef struct {
    uint32_t eip, cs, eflags;
 } registers_t;
 
-extern tabreg_t gdt_r;
 extern uint32_t isr_stub_table[32];
 extern uint32_t keyboard_stub;
 
@@ -64,7 +63,6 @@ void pic_remap(uint8_t off1, uint8_t off2) {
 void arch_init(void (*kcall)(char, unsigned char)) {
     keyboard_init(kcall);
     vga_init();
-    printf("[i386] GDT is at 0x%08X, %u bytes long\n", gdt_r.base, gdt_r.limit);
 
     // Fill out IDT and load it
     for(int i = 0; i < 32; i++) {
