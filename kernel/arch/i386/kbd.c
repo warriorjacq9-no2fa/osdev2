@@ -1,6 +1,6 @@
 #include <string.h>
 #include <stdio.h>
-#include "kbd.h"
+#include <kernel/kbd.h>
 
 static void (*kcallback)(char, unsigned char);
 static unsigned char kstate = 0;
@@ -24,6 +24,15 @@ void keyboard() {
     unsigned char sc = inb(0x60);
 
     switch (sc) {
+        /* Backspace pressed */
+        case 0x0E:
+            kstate |= KBD_BCKSP;
+            kcallback(0, kstate);
+            break;
+        /* Backspace released */
+        case 0x8E:
+            kstate &= ~KBD_BCKSP;
+            break;
         /* Shift pressed */
         case 0x2A: // Left Shift
         case 0x36: // Right Shift

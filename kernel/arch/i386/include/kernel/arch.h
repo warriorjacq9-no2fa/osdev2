@@ -14,5 +14,6 @@ void puts(char* s);
 void putc(char c);
 void setpos(uint8_t x, uint8_t y);
 uint16_t getpos();
+void clrline(uint8_t y);
 
 #endif

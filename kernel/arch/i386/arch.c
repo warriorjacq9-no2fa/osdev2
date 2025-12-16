@@ -1,8 +1,8 @@
 #include <kernel/arch.h>
 #include <stdio.h>
 #include <string.h>
+#include <kernel/kbd.h>
 #include "vga.h"
-#include "kbd.h"
 
 typedef struct {
     uint16_t limit;

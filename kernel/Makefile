@@ -8,7 +8,7 @@ LIBS := -L$(CURDIR)/../libk -lk
 
 HEADERS = \
 arch/$(ARCH)/vga.h \
-arch/$(ARCH)/kbd.h \
+arch/$(ARCH)/include/kernel/kbd.h \
 arch/$(ARCH)/include/kernel/arch.h
 
 SRCS = \

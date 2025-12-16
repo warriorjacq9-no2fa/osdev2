@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <stdio.h>
+#include <string.h>
 #include "vga.h"
 
 static uint16_t* VGA_MEM = (uint16_t*)0xB8000;
@@ -55,4 +56,8 @@ void setpos(uint8_t x, uint8_t y) {
 
 uint16_t getpos() {
     return (ty << 8) | tx;
+}
+
+void clrline(uint8_t y) {
+    memset(VGA_MEM + (y * WIDTH), 0, WIDTH);
 }

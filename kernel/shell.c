@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <kernel/arch.h>
+#include <kernel/kbd.h>
 
 #define PROMPT_LEN 1
 
@@ -15,19 +16,32 @@ void shell_init() {
     puts(">");
 }
 
+void shell_proc() {
+    printf("You said %s!\n", shellbuf);
+    memset(shellbuf, 0, 256);
+    shellptr = 0;
+}
+
 // Keyboard callback
 void kcallback(char c, unsigned char kstate) {
     if(c == '\n') {
         // process buffer, clear buffer
-        setpos(PROMPT_LEN, sy);
-        printf("\nYou said %s\n", shellbuf);
-        sy += 2;
-        memset(shellbuf, 0, 256);
-        shellptr = 0;
+        setpos(0, ++sy);
+        shell_proc();
+        sy++;
         puts(">");
     } else {
-        shellbuf[shellptr++] = c;
-        setpos(PROMPT_LEN, sy);
+        if(kstate & KBD_BCKSP) {
+            if(shellptr > 0)
+                shellptr--;
+            shellbuf[shellptr] = 0;
+            clrline(sy);
+            setpos(0, sy);
+            puts(">");
+        } else {
+            shellbuf[shellptr++] = c;
+            setpos(PROMPT_LEN, sy);
+        }
         puts(shellbuf);
     }
 }
