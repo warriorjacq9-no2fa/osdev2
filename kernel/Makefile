@@ -23,7 +23,6 @@ arch/$(ARCH)/kbd.o
 kernel.bin: $(SRCS)
 	$(LD) $(LDFLAGS) -T arch/$(ARCH)/linker.ld $^ $(LIBS) -o kernel.bin
 	objdump -s -d kernel.bin > kernel.dump
-	grub-file --is-x86-multiboot2 kernel.bin
 
 %.o: %.c $(HEADERS)
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@

@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <string.h>
+#include <stdio.h>
 #include <kernel/arch.h>
 
 #define PROMPT_LEN 1
