@@ -6,6 +6,11 @@
 
 #define PROMPT_LEN 1
 
+#define CMD_PEEK    1
+#define CMD_POKE    2
+#define CMD_INB     3
+#define CMD_OUTB    4
+
 char shellbuf[256];
 static uint8_t shellptr = 0;
 uint8_t sy;
@@ -16,8 +21,77 @@ void shell_init() {
     puts(">");
 }
 
+uint8_t shell_hash(char* cmd) {
+    if(strcmp(cmd, "peek") == 0)    return CMD_PEEK;
+    if(strcmp(cmd, "poke") == 0)    return CMD_POKE;
+    if(strcmp(cmd, "inb") == 0)     return CMD_INB;
+    if(strcmp(cmd, "outb") == 0)    return CMD_OUTB;
+    return 0;
+}
+
 void shell_proc() {
-    printf("You said %s!\n", shellbuf);
+    char* word = strtok(shellbuf, " ");
+    switch(shell_hash(word)) {
+        case CMD_PEEK:
+            char* arg = strtok(NULL, " ");
+            if(arg == NULL) {
+                printf("Usage: peek <location>");
+                break;
+            }
+            char* end;
+            int mem = strtoul(arg, &end, 16);
+            printf("%08X: %02X", mem, *(uint8_t*)mem);
+            break;
+        case CMD_POKE:
+            arg = strtok(NULL, " ");
+            if(arg == NULL) {
+                printf("Usage: poke <location> <value>");
+                break;
+            }
+            mem = strtoul(arg, &end, 16);
+
+            arg = strtok(NULL, " ");
+            if(arg == NULL) {
+                printf("Usage: poke <location> <value>");
+                break;
+            }
+            int val = strtoul(arg, &end, 16);
+
+            printf("%08X = %02X", mem, val);
+            *(uint8_t*)mem = val;
+            break;
+        case CMD_INB:
+            arg = strtok(NULL, " ");
+            if(arg == NULL) {
+                printf("Usage: inb <port>");
+                break;
+            }
+            int port = strtoul(arg, &end, 16);
+            printf("%02X: %02X", port, inb(port));
+            break;
+        case CMD_OUTB:
+            arg = strtok(NULL, " ");
+            if(arg == NULL) {
+                printf("Usage: outb <port> <value>");
+                break;
+            }
+            port = strtoul(arg, &end, 16);
+
+            arg = strtok(NULL, " ");
+            if(arg == NULL) {
+                printf("Usage: outb <port> <value>");
+                break;
+            }
+            val = strtoul(arg, &end, 16);
+
+            printf("%02X = %02X", port, val);
+            outb(port, val);
+            break;
+        default:
+            printf("Unknown command: %s", word);
+            break;
+    }
+    printf("\n");
     memset(shellbuf, 0, 256);
     shellptr = 0;
 }
