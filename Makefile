@@ -1,33 +1,9 @@
-CFLAGS += -m32 -march=i386 -static -Os -fno-stack-protector -fno-pie -ffreestanding -Wall -Wextra
-CC = gcc
-
-AR = ar
-
-AFLAGS += -felf32
-AFLAGS_BIN += -fbin
-AS = nasm
-
-LD = gcc
-LDFLAGS = -Os -nostdlib -fno-stack-protector -ffreestanding -m32 -static
-
 ARCH ?= i386
-TARGET ?= dlx
+
+include kernel/arch/$(ARCH).mk
 
 # Export variables for subdirectories
-export CFLAGS
-export CC
-
-export AR
-
-export AFLAGS
-export AFLAGS_BIN
-export AS
-
-export LD
-export LDFLAGS
-
-export ARCH
-export TARGET
+export CFLAGS CC AR AFLAGS AFLAGS_BIN AS LD LDFLAGS LDFLAGS_BIN QEMU ARCH
 
 .PHONY: all build clean test
 all: build os.img

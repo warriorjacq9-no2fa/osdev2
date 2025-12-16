@@ -24,7 +24,6 @@ kernel.img: arch/$(ARCH)/bootstrap.o kernel.bin
 
 kernel.bin: $(SRCS)
 	$(LD) $(LDFLAGS) -T arch/$(ARCH)/linker.ld $^ $(LIBS) -o kernel.bin
-	objdump -b binary -m i386 --adjust-vma=0x10000 -D $@ > kernel.dump
 
 %.o: %.c $(HEADERS)
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
@@ -34,7 +33,6 @@ kernel.bin: $(SRCS)
 
 arch/$(ARCH)/bootstrap.o: arch/$(ARCH)/bootstrap.asm
 	$(AS) -fbin $< -o $@
-	objdump -b binary -m i8086 --adjust-vma=0x7c00 -D $@ > bootstrap.dump
 
 clean:
 	rm -f $(SRCS) arch/$(ARCH)/bootstrap.o *.bin *.dump
