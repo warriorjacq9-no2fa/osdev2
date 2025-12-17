@@ -1,12 +1,24 @@
-CFLAGS += -mcmodel=medany -ffreestanding -Wall -Wextra
-CC = riscv64-linux-gcc
+.PHONY: clean
 
-AR = riscv64-linux-ar
+INCLUDES := -I$(CURDIR)/arch/$(ARCH)/include \
+-I$(CURDIR)/../libk/arch/$(ARCH)/include \
+-I$(CURDIR)/../libk/include 
 
-AFLAGS += -c
-AS = riscv64-linux-as
+LIBS := -L$(CURDIR)/../libk -lk
 
-LD := $(CC)
-LDFLAGS = -nostdlib -ffreestanding
+HEADERS = \
+arch/$(ARCH)/vga.h \
+arch/$(ARCH)/include/kernel/arch.h
 
-QEMU = qemu-system-riscv64 -machine virt -bios default -nographic -kernel
+SRCS = \
+kernel.o \
+shell.o \
+arch/$(ARCH)/boot.o \
+arch/$(ARCH)/arch.o \
+arch/$(ARCH)/vga.o
+
+kernel.img: $(SRCS)
+	$(LD) $(LDFLAGS) -T arch/$(ARCH)/linker.ld $^ $(LIBS) -o $@
+
+clean:
+	rm -f $(SRCS) arch/$(ARCH)/bootstrap.o *.bin *.dump *.img

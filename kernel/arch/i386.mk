@@ -1,13 +1,32 @@
-CFLAGS += -m32 -march=i386 -static -Os -fno-stack-protector -fno-pie -ffreestanding -Wall -Wextra
-CC = gcc
+.PHONY: clean
 
-AR = ar
+INCLUDES := -I$(CURDIR)/arch/$(ARCH)/include \
+-I$(CURDIR)/../libk/arch/$(ARCH)/include \
+-I$(CURDIR)/../libk/include 
 
-AFLAGS += -felf32
-AF_BIN += -fbin
-AS = nasm
+LIBS := -L$(CURDIR)/../libk -lk
 
-LD := $(CC)
-LDFLAGS = -Os -nostdlib -fno-stack-protector -ffreestanding -m32 -static
+HEADERS = \
+arch/$(ARCH)/vga.h \
+arch/$(ARCH)/include/kernel/kbd.h \
+arch/$(ARCH)/include/kernel/arch.h
 
-QEMU = qemu-system-i386 -fda
+SRCS = \
+kernel.o \
+shell.o \
+arch/$(ARCH)/boot.o \
+arch/$(ARCH)/arch.o \
+arch/$(ARCH)/vga.o \
+arch/$(ARCH)/kbd.o
+
+kernel.img: arch/$(ARCH)/bootstrap.o kernel.bin
+	cat $^ > kernel.img
+
+kernel.bin: $(SRCS)
+	$(LD) $(LDFLAGS) -T arch/$(ARCH)/linker.ld $^ $(LIBS) -o kernel.bin
+
+arch/$(ARCH)/bootstrap.o: arch/$(ARCH)/bootstrap.asm
+	$(AS) $(AF_BIN) $< -o $@
+
+clean:
+	rm -f $(SRCS) arch/$(ARCH)/bootstrap.o *.bin *.dump *.img

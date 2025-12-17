@@ -1,3 +1,5 @@
+include ../arch/$(ARCH).conf
+
 .PHONY: clean
 
 INCLUDES = \

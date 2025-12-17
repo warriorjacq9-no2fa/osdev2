@@ -1,43 +1,7 @@
-.PHONY: clean
-
-INCLUDES := -I$(CURDIR)/arch/$(ARCH)/include \
--I$(CURDIR)/../libk/arch/$(ARCH)/include \
--I$(CURDIR)/../libk/include 
-
-LIBS := -L$(CURDIR)/../libk -lk
-
-HEADERS = \
-arch/$(ARCH)/vga.h \
-arch/$(ARCH)/include/kernel/kbd.h \
-arch/$(ARCH)/include/kernel/arch.h
-
-SRCS = \
-kernel.o \
-shell.o \
-arch/$(ARCH)/boot.o \
-arch/$(ARCH)/arch.o \
-arch/$(ARCH)/vga.o \
-arch/$(ARCH)/kbd.o
-
-ifeq ($(ARCH),i386)
-kernel.img: arch/$(ARCH)/bootstrap.o kernel.bin
-	cat $^ > kernel.img
-else
-kernel.img: kernel.bin
-	cp $^ $@
-endif
-
-kernel.bin: $(SRCS)
-	$(LD) $(LDFLAGS) -T arch/$(ARCH)/linker.ld $^ $(LIBS) -o kernel.bin
+include arch/$(ARCH).mk
 
 %.o: %.c $(HEADERS)
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 %.o: %.asm
 	$(AS) $(AFLAGS) $< -o $@
-
-arch/$(ARCH)/bootstrap.o: arch/$(ARCH)/bootstrap.asm
-	$(AS) $(AF_BIN) $< -o $@
-
-clean:
-	rm -f $(SRCS) arch/$(ARCH)/bootstrap.o *.bin *.dump

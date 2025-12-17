@@ -1,6 +1,6 @@
 ARCH ?= i386
 
-include kernel/arch/$(ARCH).mk
+include arch/$(ARCH).conf
 
 # Export variables for subdirectories
 export CFLAGS CC AR AFLAGS AFLAGS_BIN AS LD LDFLAGS LDFLAGS_BIN QEMU ARCH
