@@ -7,7 +7,7 @@ AFLAGS += -felf32
 AF_BIN += -fbin
 AS = nasm
 
-LD = gcc
+LD := $(CC)
 LDFLAGS = -Os -nostdlib -fno-stack-protector -ffreestanding -m32 -static
 
 QEMU = qemu-system-i386
