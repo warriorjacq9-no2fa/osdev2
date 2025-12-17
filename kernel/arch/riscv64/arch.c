@@ -6,5 +6,4 @@ void wait() {
 }
 
 void arch_init(void (*kcall)(char, unsigned char)) {
-    puts("Hello, world!");
 }

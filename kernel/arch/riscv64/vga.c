@@ -5,14 +5,14 @@
 #include <string.h>
 #include "vga.h"
 
-static uint8_t* UART_MEM = (uint8_t*)0x10000000;
-
 void vga_init() {
 }
 
 void putc(char c) {
     if(c == 0) return;
-    *UART_MEM = c;
+    register long a0 asm("a0") = c;
+    register long a7 asm("a7") = 1; // SBI console_putchar
+    asm volatile ("ecall" : : "r"(a0), "r"(a7));
 }
 
 void puts(char* s) {

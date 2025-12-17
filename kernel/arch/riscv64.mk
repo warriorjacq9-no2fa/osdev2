@@ -9,4 +9,4 @@ AS = riscv64-linux-as
 LD := $(CC)
 LDFLAGS = -nostdlib -ffreestanding
 
-QEMU = qemu-system-riscv64 -machine virt -bios none -kernel
+QEMU = qemu-system-riscv64 -machine virt -bios default -nographic -kernel
