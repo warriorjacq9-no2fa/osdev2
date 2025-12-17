@@ -8,8 +8,6 @@
 
 #define CMD_PEEK    1
 #define CMD_POKE    2
-#define CMD_INB     3
-#define CMD_OUTB    4
 
 char shellbuf[256];
 static uint8_t shellptr = 0;
@@ -24,8 +22,6 @@ void shell_init() {
 uint8_t shell_hash(char* cmd) {
     if(strcmp(cmd, "peek") == 0)    return CMD_PEEK;
     if(strcmp(cmd, "poke") == 0)    return CMD_POKE;
-    if(strcmp(cmd, "inb") == 0)     return CMD_INB;
-    if(strcmp(cmd, "outb") == 0)    return CMD_OUTB;
     return 0;
 }
 
@@ -59,33 +55,6 @@ void shell_proc() {
 
             printf("%08X = %02X", mem, val);
             *(uint8_t*)mem = val;
-            break;
-        case CMD_INB:
-            arg = strtok(NULL, " ");
-            if(arg == NULL) {
-                printf("Usage: inb <port>");
-                break;
-            }
-            int port = strtoul(arg, &end, 16);
-            printf("%02X: %02X", port, inb(port));
-            break;
-        case CMD_OUTB:
-            arg = strtok(NULL, " ");
-            if(arg == NULL) {
-                printf("Usage: outb <port> <value>");
-                break;
-            }
-            port = strtoul(arg, &end, 16);
-
-            arg = strtok(NULL, " ");
-            if(arg == NULL) {
-                printf("Usage: outb <port> <value>");
-                break;
-            }
-            val = strtoul(arg, &end, 16);
-
-            printf("%02X = %02X", port, val);
-            outb(port, val);
             break;
         default:
             printf("Unknown command: %s", word);
