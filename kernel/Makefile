@@ -32,7 +32,7 @@ kernel.bin: $(SRCS)
 	$(AS) $(AFLAGS) $< -o $@
 
 arch/$(ARCH)/bootstrap.o: arch/$(ARCH)/bootstrap.asm
-	$(AS) -fbin $< -o $@
+	$(AS) $(AF_BIN) $< -o $@
 
 clean:
 	rm -f $(SRCS) arch/$(ARCH)/bootstrap.o *.bin *.dump

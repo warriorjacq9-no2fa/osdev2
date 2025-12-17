@@ -4,6 +4,7 @@ CC = gcc
 AR = ar
 
 AFLAGS += -felf32
+AF_BIN += -fbin
 AS = nasm
 
 LD = gcc
