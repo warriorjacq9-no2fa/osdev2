@@ -19,8 +19,13 @@ arch/$(ARCH)/arch.o \
 arch/$(ARCH)/vga.o \
 arch/$(ARCH)/kbd.o
 
+ifeq ($(ARCH),i386)
 kernel.img: arch/$(ARCH)/bootstrap.o kernel.bin
 	cat $^ > kernel.img
+else
+kernel.img: kernel.bin
+	cp $^ $@
+endif
 
 kernel.bin: $(SRCS)
 	$(LD) $(LDFLAGS) -T arch/$(ARCH)/linker.ld $^ $(LIBS) -o kernel.bin

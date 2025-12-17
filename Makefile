@@ -21,4 +21,4 @@ clean:
 	$(MAKE) -C libk clean
 
 test: build os.img
-	qemu-system-i386 -fda os.img -d int -D qemu.log -no-reboot -no-shutdown
+	$(QEMU) os.img -d int -D qemu.log -no-reboot -no-shutdown

@@ -10,4 +10,4 @@ AS = nasm
 LD := $(CC)
 LDFLAGS = -Os -nostdlib -fno-stack-protector -ffreestanding -m32 -static
 
-QEMU = qemu-system-i386
+QEMU = qemu-system-i386 -fda
