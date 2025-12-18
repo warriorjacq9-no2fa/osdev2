@@ -3,6 +3,8 @@
 *.iso
 *.img
 isodir/*
+mnt/*
+*.efi
 *.dump
 *.log
 *.a
