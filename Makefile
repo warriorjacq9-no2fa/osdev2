@@ -61,6 +61,7 @@ os.img: libk/libk.a kernel/kernel.img
 endif
 
 build:
+	$(MAKE) -C libk libk.a
 	$(MAKE) -C kernel kernel.img
 
 clean:
