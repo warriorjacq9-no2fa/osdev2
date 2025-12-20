@@ -4,7 +4,7 @@ resb 4096 ; 4KB of stack
 stack_top:
 
 section .text.start
-boot_start:
+_start:
 ; Get into C as fast as possible
     mov esp, stack_top
     call kmain
@@ -13,7 +13,7 @@ halt:
     hlt
     jmp halt
 
-section .start
+section .text
 extern kmain
 
 %macro isr_err 1
