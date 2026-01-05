@@ -15,8 +15,9 @@ IMG_SIZE   := 64
 ESP_OFFSET := 1048576   # 1 MiB
 SECTOR     := 512
 EFI_BOOT   := EFI/BOOT
+EFI_FILE   := $(shell echo "$(EFI_NAME)" | tr '[:lower:]' '[:upper:]')
 
-os.img: kernel/kernel.img $(EFI_NAME)
+os.img: kernel/kernel.img efi/main.efi
 	dd if=/dev/zero of=$(IMG) bs=1M count=$(IMG_SIZE)
 
 	# Create GPT + ESP (works on plain files)
@@ -39,7 +40,7 @@ os.img: kernel/kernel.img $(EFI_NAME)
 
 	# Copy bootloader
 	mcopy -i $(IMG)@@$(ESP_OFFSET) \
-	  $(EFI_NAME) ::/EFI/BOOT/BOOTAA64.EFI
+	  efi/main.efi ::/EFI/BOOT/$(EFI_FILE)
 
 	# Copy GRUB config
 	mcopy -i $(IMG)@@$(ESP_OFFSET) \
@@ -47,14 +48,10 @@ os.img: kernel/kernel.img $(EFI_NAME)
 
 	# Optional kernel
 	mcopy -i $(IMG)@@$(ESP_OFFSET) \
-	  kernel/kernel.img ::/kernel.img
+	  kernel/kernel.img ::/kernel.elf
 
-$(EFI_NAME):
-	grub-mkimage \
-		-O $(EFI_ARCH) \
-		-o $@ \
-		-p /EFI/BOOT \
-		fat part_gpt normal configfile linux echo
+efi/main.efi:
+	$(MAKE) -C efi main.efi
 else
 os.img: libk/libk.a kernel/kernel.img
 	cp $(lastword $^) $@

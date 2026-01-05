@@ -103,7 +103,7 @@ protected_mode_start:
     mov ss, ax
 
     ; Jump to kernel entry point at 0x10000
-    mov eax, 0x0010000
+    mov eax, 0x00010000
     jmp eax
     hlt
 
