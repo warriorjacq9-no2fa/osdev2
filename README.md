@@ -6,7 +6,7 @@ Currently, it is targeting x86 and ARM SystemReady SR, and I might expand RISC-V
 
 This project uses `make`. By default, it targets i386, but other targets can be set by setting the ARCH environment variable. Possible values are:
  - i386
- - arm-sr
+ - aarch64
  - riscv64
 
 Additionally, this project has several end targets. The default is nfs4, but others can by set by setting the TARGET environment variable to one of the following:

@@ -1,0 +1,3 @@
+menuentry "C-POS AARCH64" {
+    linux /kernel.img
+}

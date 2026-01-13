@@ -1,3 +1,0 @@
-menuentry "C-POS ARMSR" {
-    linux /kernel.img
-}
