@@ -1,4 +1,10 @@
+LASTARCH := $(shell cat .lastarch)
+
+ifeq ($(wildcard .lastarch),)
 ARCH ?= i386
+else
+ARCH ?= $(LASTARCH)
+endif
 
 include arch/$(ARCH).conf
 
@@ -42,10 +48,6 @@ os.img: kernel/kernel.img efi/main.efi
 	mcopy -i $(IMG)@@$(ESP_OFFSET) \
 	  efi/main.efi ::/EFI/BOOT/$(EFI_FILE)
 
-	# Copy GRUB config
-	mcopy -i $(IMG)@@$(ESP_OFFSET) \
-	  arch/$(ARCH).grub ::/EFI/BOOT/grub.cfg
-
 	# Optional kernel
 	mcopy -i $(IMG)@@$(ESP_OFFSET) \
 	  kernel/kernel.img ::/kernel.elf
@@ -58,8 +60,11 @@ os.img: libk/libk.a kernel/kernel.img
 endif
 
 build:
+	@echo Building for $(ARCH)...
+	@sleep 0.5
 	$(MAKE) -C libk libk.a
 	$(MAKE) -C kernel kernel.img
+	echo $(ARCH) > .lastarch
 
 clean:
 	rm -rf *.log *.img *.efi *.dump isodir

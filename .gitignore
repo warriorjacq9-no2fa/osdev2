@@ -10,3 +10,4 @@ mnt/*
 *.log
 *.a
 .vscode/*
+.lastarch
