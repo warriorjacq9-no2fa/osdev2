@@ -9,34 +9,24 @@
  */
 _start:
     /* x0 = boot_info */
-    mov x19, x0          /* save boot_info pointer */
-    mov x20, x1          /* save PIE base address */
+    /* x1 = base address */
 
     /* Set up stack: stack_top label is relative to PIE base */
     adr x1, stack_top
     mov sp, x1
 
-    /* UART base (from ACPI/SPCR, can also be hardcoded for now) */
-    mov x0, 0x09000000
+    /* Call the boot_info parsing code, which is in C */
+    bl parse_boot_info
+    bl kmain
 
-    /* Print message */
-    adr x1, msg
-
-1:  ldrb w2, [x1], #1
-    cbz w2, 2f
-    str w2, [x0]
-    b 1b
-
-2:
 halt:
     wfe
     b halt
 
-/* --- Data sections --- */
-.section .rodata
-msg:
-    .ascii "Hello from ARM64 PIE kernel!\n\0"
+.extern parse_boot_info
+.extern kmain
 
+/* --- Data sections --- */
 .section .bss
 .align 16
 stack:

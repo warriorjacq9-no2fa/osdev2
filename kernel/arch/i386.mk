@@ -23,10 +23,16 @@ kernel.img: arch/$(ARCH)/bootstrap.o kernel.bin
 	cat $^ > kernel.img
 
 kernel.bin: $(SRCS)
-	$(LD) $(LDFLAGS) -T arch/$(ARCH)/linker.ld $^ $(LIBS) -o kernel.bin
+	$(LD) $(LDFLAGS) -T arch/$(ARCH)/linker.ld $^ $(LIBS) -o $@
 
 arch/$(ARCH)/bootstrap.o: arch/$(ARCH)/bootstrap.asm
 	$(AS) $(AF_BIN) $< -o $@
 
 clean:
 	rm -f $(SRCS) arch/$(ARCH)/bootstrap.o *.bin *.dump *.img
+
+%.o: %.c $(HEADERS)
+	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+%.o: %.asm
+	$(AS) $(AFLAGS) $< -o $@

@@ -11,3 +11,4 @@ mnt/*
 *.a
 .vscode/*
 .lastarch
+vars.fd

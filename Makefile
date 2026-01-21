@@ -1,3 +1,5 @@
+MAKEFLAGS += -r
+
 LASTARCH := $(shell cat .lastarch)
 
 ifeq ($(wildcard .lastarch),)

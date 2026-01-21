@@ -84,6 +84,10 @@ void arch_init(void (*kcall)(char, unsigned char)) {
     asm volatile("sti");
 }
 
+void arch_loop_task() {
+    wait();
+}
+
 void exception_handler(uint32_t vec, registers_t r) {
     printf("Exception 0x%02X at %08X!\n", vec, r.eip);
 }

@@ -11,9 +11,10 @@ typedef struct {
 } framebuffer_info_t;
 
 typedef struct {
-    UINT64 base;
-    UINT32 baud;
-    UINT8  type;   // 0 = unknown, 1 = MMIO, 2 = I/O port
+    UINT64  base;
+    UINT32  baud;
+    UINT8   type; // 0 = unknown, 1 = MMIO, 2 = I/O port
+    UINT16  model; // See https://learn.microsoft.com/en-us/windows-hardware/drivers/bringup/acpi-debug-port-table#table-3-debug-port-types-and-subtypes
 } serial_info_t;
 
 typedef struct {
