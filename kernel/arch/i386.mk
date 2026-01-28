@@ -11,7 +11,7 @@ arch/$(ARCH)/vga.h \
 arch/$(ARCH)/include/kernel/kbd.h \
 arch/$(ARCH)/include/kernel/arch.h
 
-SRCS = \
+OBJS = \
 kernel.o \
 shell.o \
 arch/$(ARCH)/boot.o \
@@ -22,14 +22,14 @@ arch/$(ARCH)/kbd.o
 kernel.img: arch/$(ARCH)/bootstrap.o kernel.bin
 	cat $^ > kernel.img
 
-kernel.bin: $(SRCS)
+kernel.bin: $(OBJS)
 	$(LD) $(LDFLAGS) -T arch/$(ARCH)/linker.ld $^ $(LIBS) -o $@
 
 arch/$(ARCH)/bootstrap.o: arch/$(ARCH)/bootstrap.asm
 	$(AS) $(AF_BIN) $< -o $@
 
 clean:
-	rm -f $(SRCS) arch/$(ARCH)/bootstrap.o *.bin *.dump *.img
+	rm -f $(OBJS) arch/$(ARCH)/bootstrap.o *.bin *.dump *.img
 
 %.o: %.c $(HEADERS)
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
