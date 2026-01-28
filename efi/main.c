@@ -46,6 +46,7 @@ serial_info_t find_uart(EFI_SYSTEM_TABLE *SystemTable) {
                 result.baud = 57600;
                 break;
             case 7:
+            default:
                 result.baud = 115200;
                 break;
         }
