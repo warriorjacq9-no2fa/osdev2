@@ -26,7 +26,7 @@ EFI_BOOT   := EFI/BOOT
 EFI_FILE   := $(shell echo "$(EFI_NAME)" | tr '[:lower:]' '[:upper:]')
 
 os.img: kernel/kernel.img efi/main.efi
-	dd if=/dev/zero of=$(IMG) bs=1M count=$(IMG_SIZE)
+	dd if=/dev/zero of=$@ bs=1M count=$(IMG_SIZE)
 
 	# Create GPT + ESP (works on plain files)
 	sgdisk \
@@ -34,24 +34,24 @@ os.img: kernel/kernel.img efi/main.efi
 	  -n 1:2048: \
 	  -t 1:ef00 \
 	  -c 1:"EFI System Partition" \
-	  $(IMG)
+	  $@
 
 	# Format ESP at offset (no loop device!)
 	mkfs.vfat \
 	  -F 32 \
 	  --offset=$$(( $(ESP_OFFSET) / $(SECTOR) )) \
-	  $(IMG)
+	  $@
 
 	# Create directories
-	mmd   -i $(IMG)@@$(ESP_OFFSET) ::/EFI
-	mmd   -i $(IMG)@@$(ESP_OFFSET) ::/EFI/BOOT
+	mmd   -i $@@@$(ESP_OFFSET) ::/EFI
+	mmd   -i $@@@$(ESP_OFFSET) ::/EFI/BOOT
 
 	# Copy bootloader
-	mcopy -i $(IMG)@@$(ESP_OFFSET) \
+	mcopy -i $@@@$(ESP_OFFSET) \
 	  efi/main.efi ::/EFI/BOOT/$(EFI_FILE)
 
 	# Optional kernel
-	mcopy -i $(IMG)@@$(ESP_OFFSET) \
+	mcopy -i $@@@$(ESP_OFFSET) \
 	  kernel/kernel.img ::/kernel.elf
 
 efi/main.efi:
