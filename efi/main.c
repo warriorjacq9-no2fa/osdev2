@@ -84,7 +84,8 @@ void print_info(boot_info_t *info) {
             (info->serial.type ? 
                 (info->serial.type == 1 ? L"MMIO" : L"Port") : 
                 L"????"));
-        Print(L"    Baud: %u\n\n", info->serial.baud);
+        Print(L"    Baud: %u\n", info->serial.baud);
+        Print(L"    Model: %u\n\n", info->serial.model);
     }
     if(info->mmap.memory_map) {
         int count = info->mmap.memory_map_size / info->mmap.memory_map_descriptor_size;
@@ -169,8 +170,8 @@ EFI_STATUS load_elf(EFI_FILE_HANDLE file, EFI_SYSTEM_TABLE *st, EFI_PHYSICAL_ADD
     ehdr = (Elf64_Ehdr *)elf_data;
     
     // Verify ELF magic
-    if (ehdr->e_ident[0] != EI_MAG0 || ehdr->e_ident[1] != EI_MAG1 ||
-        ehdr->e_ident[2] != EI_MAG2 || ehdr->e_ident[3] != EI_MAG3) {
+    if (ehdr->e_ident[EI_MAG0] != 0x7F || ehdr->e_ident[EI_MAG1] != 'E' ||
+        ehdr->e_ident[EI_MAG2] != 'L' || ehdr->e_ident[EI_MAG3] != 'F') {
         Print(L"Invalid ELF magic\n");
         uefi_call_wrapper(st->BootServices->FreePool, 1, elf_data);
         return EFI_INVALID_PARAMETER;
