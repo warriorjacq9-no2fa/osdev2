@@ -7,12 +7,16 @@ INCLUDES := -I$(CURDIR)/arch/$(ARCH)/include \
 LIBS := -L$(CURDIR)/../libk -lk
 
 HEADERS = \
+shell.h \
 arch/$(ARCH)/boot.h \
+arch/$(ARCH)/uart.h \
 arch/$(ARCH)/include/kernel/arch.h
 
 OBJS = \
 kernel.o \
+shell.o \
 arch/$(ARCH)/arch.o \
+arch/$(ARCH)/uart.o \
 arch/$(ARCH)/boot.o
 
 kernel.img: $(OBJS)
