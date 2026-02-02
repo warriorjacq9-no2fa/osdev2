@@ -10,12 +10,13 @@
 #define CMD_POKE    2
 
 char shellbuf[256];
+char shellhist[256][256];
+char shellptr_hist[256];
 static uint8_t shellptr = 0;
-uint8_t sy;
+static uint8_t histptr = 0;
 
 void shell_init() {
     memset(shellbuf, 0, 256);
-    sy = ((getpos() & 0xFF00) >> 8);
     puts(">");
 }
 
@@ -61,29 +62,40 @@ void shell_proc() {
             break;
     }
     printf("\n");
+    memcpy(&shellhist[histptr], shellbuf, 256);
+    shellptr_hist[histptr] = shellptr;
     memset(shellbuf, 0, 256);
     shellptr = 0;
+    histptr++;
 }
 
 // Keyboard callback
 void kcallback(char c, unsigned char kstate) {
     if(c == '\n') {
         // process buffer, clear buffer
-        setpos(0, ++sy);
+        setpos_x(0);
+        putc('\n');
         shell_proc();
-        sy++;
         puts(">");
     } else {
         if(kstate & KBD_BCKSP) {
             if(shellptr > 0)
                 shellptr--;
             shellbuf[shellptr] = 0;
-            clrline(sy);
-            setpos(0, sy);
+            clrline();
+            setpos_x(0);
             puts(">");
+        } else if(kstate & KBD_UP) {
+            memcpy(shellbuf, &shellhist[histptr - 1], 256);
+            shellptr = shellptr_hist[--histptr];
+            setpos_x(PROMPT_LEN);
+        } else if(kstate & KBD_DOWN) {
+            memcpy(shellbuf, &shellhist[histptr + 1], 256);
+            shellptr = shellptr_hist[++histptr];
+            setpos_x(PROMPT_LEN);
         } else {
             shellbuf[shellptr++] = c;
-            setpos(PROMPT_LEN, sy);
+            setpos_x(PROMPT_LEN);
         }
         puts(shellbuf);
     }

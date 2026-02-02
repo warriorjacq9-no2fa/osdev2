@@ -4,9 +4,9 @@
 #include "shell.h"
 
 int kmain() {
-    //arch_init(kcallback);
+    arch_init(kcallback);
     printf("Hello World!\n");
-    //shell_init();
+    shell_init();
 
     for(;;) wait();
 }

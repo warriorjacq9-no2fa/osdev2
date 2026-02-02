@@ -13,7 +13,9 @@ void arch_init(void (*kcall)(char, unsigned char));
 void puts(char* s);
 void putc(char c);
 void setpos(uint8_t x, uint8_t y);
+void setpos_x(uint8_t x);
 uint16_t getpos();
-void clrline(uint8_t y);
+void clrline_y(uint8_t y);
+void clrline();
 
 #endif

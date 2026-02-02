@@ -4,6 +4,7 @@
 
 static void (*kcallback)(char, unsigned char);
 static unsigned char kstate = 0;
+static unsigned char extended = 0;
 
 const char keymap[] = {
     '\0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '\0',
@@ -24,6 +25,10 @@ void keyboard() {
     unsigned char sc = inb(0x60);
 
     switch (sc) {
+        /* Extended scancode */
+        case 0xE0:
+            extended = 1;
+            break;
         /* Backspace pressed */
         case 0x0E:
             kstate |= KBD_BCKSP;
@@ -49,6 +54,68 @@ void keyboard() {
         case 0x3A:
             kstate ^= KBD_CAPS; // toggle
             break;
+        
+        /* Arrow keys pressed*/
+        case 0x48:
+            if(extended) {
+                kstate |= KBD_UP;
+                extended = 0;
+                kcallback(0, kstate);
+            }
+            break;
+        case 0xC8:
+            if(extended) {
+                kstate &= ~KBD_UP;
+                extended = 0;
+                kcallback(0, kstate);
+            }
+            break;
+            
+        case 0x50:
+            if(extended) {
+                kstate |= KBD_DOWN;
+                extended = 0;
+                kcallback(0, kstate);
+            }
+            break;
+        case 0xD0:
+            if(extended) {
+                kstate &= ~KBD_DOWN;
+                extended = 0;
+                kcallback(0, kstate);
+            }
+            break;
+            
+        case 0x4B:
+            if(extended) {
+                kstate |= KBD_LEFT;
+                extended = 0;
+                kcallback(0, kstate);
+            }
+            break;
+        case 0xCB:
+            if(extended) {
+                kstate &= ~KBD_LEFT;
+                extended = 0;
+                kcallback(0, kstate);
+            }
+            break;
+            
+        case 0x4D:
+            if(extended) {
+                kstate |= KBD_RIGHT;
+                extended = 0;
+                kcallback(0, kstate);
+            }
+            break;
+        case 0xCD:
+            if(extended) {
+                kstate &= ~KBD_RIGHT;
+                extended = 0;
+                kcallback(0, kstate);
+            }
+            break;
+            
 
         default:
             if (!(sc & 0x80)) {

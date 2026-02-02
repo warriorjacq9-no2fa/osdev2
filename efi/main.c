@@ -8,6 +8,18 @@
 
 #define KERNEL_PATH L"\\kernel.elf"
 
+#ifdef __aarch64__
+static inline UINTN get_current_el(void) {
+    UINTN el;
+    __asm__ volatile (
+        "mrs %0, CurrentEL\n"
+        "lsr %0, %0, #2\n"
+        : "=r"(el)
+    );
+    return el;
+}
+#endif
+
 serial_info_t find_uart(EFI_SYSTEM_TABLE *SystemTable) {
     serial_info_t result;
     result.base = 0;
@@ -458,6 +470,13 @@ EFI_STATUS EFIAPI efi_main(EFI_HANDLE image, EFI_SYSTEM_TABLE *st)
     void (*entry)(boot_info_t *, UINTN) =
         (void (*)(boot_info_t *, UINTN))elf_entry;
 
+    #ifdef __aarch64__
+    if(get_current_el() != 2) {
+        Print(L"Error: Current EL is not EL2, cannot jump to kernel\n");
+        return EFI_UNSUPPORTED;
+    }
+    #endif
+
     Print(L"Exiting boot services, jumping to kernel at %p, with boot_info at %p...\n", entry, boot_info);
 
     // Exit boot services 
@@ -471,7 +490,7 @@ EFI_STATUS EFIAPI efi_main(EFI_HANDLE image, EFI_SYSTEM_TABLE *st)
         Print(L"Error exiting: %r\n", status);
         return status;
     }
-    // Jump to kernel 
+    // Jump to kernel
     entry(boot_info, base);
     while(1);
     return EFI_SUCCESS;

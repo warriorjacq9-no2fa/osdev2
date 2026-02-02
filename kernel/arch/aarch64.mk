@@ -13,9 +13,9 @@ arch/$(ARCH)/uart.h \
 arch/$(ARCH)/include/kernel/arch.h
 
 OBJS = \
+arch/$(ARCH)/arch.o \
 kernel.o \
 shell.o \
-arch/$(ARCH)/arch.o \
 arch/$(ARCH)/uart.o \
 arch/$(ARCH)/boot.o
 

@@ -10,6 +10,7 @@ PHDRS
 SECTIONS
 {
     .text : {
+        *(.text.start)
         *(.text*)
         *(.text.*)
         _text_start = .;
